@@ -27,9 +27,10 @@ for i=9:11
     train_set{i,1}(:,2) = [];
 end
 %Generate Ceptsrum Coefficients -------------------------------------------
-N=256; %Length of Frame Block
-M=100; %Shift Between Each  Frame Block
-Window=.54-.46*cos(2*pi().*[1:N]/(N-1));
+N=256; %Length of Frame Block                                                                       %STD 256
+M=128; %Shift Between Each  Frame Block                                                              %STD 64
+%Window=.54-.46*cos(2*pi().*[1:N]/(N-1));
+Window = hamming(N);
 for i = 1:num_data
     n1 = 1:N-M:length(train_set{i,1})-N;
     n2 = n1 + N;
@@ -39,7 +40,7 @@ for i = 1:num_data
             train_set_slice = train_set{i,1};
             train_set_frames{i,j} = train_set_slice(n1(j):(n2(j)-1));
             %WINDOW
-            train_set_windowed{i,j} = Window' .* train_set_frames{i,j};
+            train_set_windowed{i,j} = Window .* train_set_frames{i,j};
             train_set_FFT{i,j} = fft(train_set_windowed{i,j});
             %MEL FREQ WRAPPING
             N2 = 1 + floor(N/2);
@@ -67,9 +68,8 @@ for i = 1:num_entries(1)
     k=1;
 end
 
-epsilon = .01; %Splitting Factor
-error = 100;
-while size(codebook,2) < 16
+epsilon = .01; %Splitting Factor                                                           %STD .01 [doesnt matter]
+while size(codebook,2) < 8                                                                 %STD 16
   for i = 1:num_entries(1) %DOUBLE CODEBOOK SIZE
      for l = 1:size(codebook,2)
      codebook_new{i,2*l-1} = (1+epsilon).*codebook{i,l};
@@ -109,19 +109,19 @@ end
 writecell(codebook,'Codebook')
 
  for i = 1:size(codebook,2) %CODEBOOK CENTROIDS TRAINSET 1
-     d1(i) = codebook{1,i}(1);
-     d2(i) = codebook{1,i}(2);
-     d3(i) = codebook{3,i}(1);
-     d4(i) = codebook{3,i}(2);
+     d1(i) = codebook{10,i}(1);
+     d2(i) = codebook{10,i}(2);
+     d3(i) = codebook{5,i}(1);
+     d4(i) = codebook{5,i}(2);
  end
  for i = 1:size(train_set_CEP,2)
        if(isempty(train_set_CEP{1,i}))
                     continue
        else
-            s1(i) = train_set_CEP{1,i}(1);
-            s2(i) = train_set_CEP{1,i}(2);
-            s3(i) = train_set_CEP{3,i}(1);
-            s4(i) = train_set_CEP{3,i}(2);
+            s1(i) = train_set_CEP{10,i}(1);
+            s2(i) = train_set_CEP{10,i}(2);
+            s3(i) = train_set_CEP{5,i}(1);
+            s4(i) = train_set_CEP{5,i}(2);
        end
  end
  scatter(d1,d2,'b')
