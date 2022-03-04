@@ -13,6 +13,7 @@
 % 5. Refine Codebook
 % 6. Testing 
 clc;clear;close;
+addpath(genpath(pwd))
 num_data = 11;
 train_set = cell(num_data,2);
 for i = 1:num_data
@@ -62,44 +63,69 @@ for i = 1:num_entries(1)
             k=k+1;
         end
     end
-    codebook{i,1}=mean(ts_cep_matrix');
+    codebook{i,1}=mean(ts_cep_matrix,2);
     k=1;
 end
 
-epsilon = .001; %Splitting Factor
+epsilon = .01; %Splitting Factor
 error = 100;
-prev_error = 0; 
-l=1;
-while abs(error)> 4
-        for i = 1:num_entries(1)
-            codebook_new{i,2*l-1} = (1+epsilon)*codebook{l};
-            codebook_new{i,2*l} = (1-epsilon)*codebook{l};
-            k=1;
-            for j = 1:num_entries(2)
-                if(isempty(train_set_CEP{i,j}))
-                    continue
+while size(codebook,2) < 16
+  for i = 1:num_entries(1) %DOUBLE CODEBOOK SIZE
+     for l = 1:size(codebook,2)
+     codebook_new{i,2*l-1} = (1+epsilon).*codebook{i,l};
+     codebook_new{i,2*l} = (1-epsilon).*codebook{i,l};
+     end
+  end
+  for i = 1:num_entries(1) %OPTIMIZE CURRENT CENTROIDS
+            for p = 1:100
+             centroid_bin=cell(size(codebook_new,2),1);
+             for k = 1:num_entries(2)
+                 for m = 1:size(codebook_new,2)
+                     if(isempty(train_set_CEP{i,k}))
+                        continue
+                     else
+                         dist_centroid(m) = norm(codebook_new{i,m}-train_set_CEP{i,k},2);
+                     end
+                 end
+                [min_val,min_index] = min(dist_centroid);
+                if isempty(centroid_bin{min_index})
+                    centroid_bin{min_index} = train_set_CEP{i,k};
                 else
-                    dist_centroid_up(j) = norm(codebook_new{i,2*l-1}-train_set_CEP{i,j},2);
-                    dist_centroid_down(j) = norm(codebook_new{i,2*l}-train_set_CEP{i,j},2);
-                        if dist_centroid_up(j) > dist_centroid_down(j)
-                         centroid_up_new(:,k) = train_set_CEP{i,j};
-                        else
-                         centroid_down_new(:,k) = train_set_CEP{i,j};
-                        end
-                    k=k+1;
+                    centroid_bin{min_index} = [centroid_bin{min_index} train_set_CEP{i,k}];
                 end
-            end
-            codebook_new{i,2*l-1}=mean(centroid_up_new');
-            codebook_new{i,2*l}=mean(centroid_down_new');
-            k=1;
-        end
-    codebook = codebook_new;
-    error = mean(dist_centroid_down') + mean(dist_centroid_up') - prev_error;
-    prev_error = mean(dist_centroid_down') + mean(dist_centroid_up');
-    l=l+1;
+             end
+             for m = 1:size(codebook_new,2)
+                 if isempty(centroid_bin{m})
+                     continue
+                 else
+                    codebook_new{i,m} = mean(centroid_bin{m},2); %BIG ISSUE
+                 end
+             end            
+           end
+  end
+ codebook = codebook_new;
 end
 
-% %PLOT CLUSTER PROOF
-% for i = 1:size(codebook,1)
-%     d1(i) = codebook(1,)
-% end
+writecell(codebook,'Codebook')
+
+ for i = 1:size(codebook,2) %CODEBOOK CENTROIDS TRAINSET 1
+     d1(i) = codebook{1,i}(1);
+     d2(i) = codebook{1,i}(2);
+     d3(i) = codebook{3,i}(1);
+     d4(i) = codebook{3,i}(2);
+ end
+ for i = 1:size(train_set_CEP,2)
+       if(isempty(train_set_CEP{1,i}))
+                    continue
+       else
+            s1(i) = train_set_CEP{1,i}(1);
+            s2(i) = train_set_CEP{1,i}(2);
+            s3(i) = train_set_CEP{3,i}(1);
+            s4(i) = train_set_CEP{3,i}(2);
+       end
+ end
+ scatter(d1,d2,'b')
+ hold on
+ scatter(s1,s2,'g')
+ scatter(d3,d4,'black','*')
+ scatter(s3,s4,'r','*')
