@@ -14,7 +14,7 @@ for i=9:11
 end
 
 %% 
-codebook = readmatrix("Codebook.txt");
+codebook = readmatrix("Codebook_final.txt");
 
 %% %% Generate Ceptsrum Coefficients 
 N=256; %Length of Frame Block
@@ -89,26 +89,14 @@ end
 %     end
 % end
 
-%% get the euclidian and closest
-% min_centr = [];
-% 
-% bean_counter = zeros(1,11);
-% euc_dist = [];
-% for s=1:11
-%     for j = 1:length_row(s)
-%         for k = 1:11
-%             reg = [];
-%             for i = 1:8 %# of centroids
-%                 euc_dist(k,i) = disteu(code_cell{k,i}, test_set_CEP{k,j});
-%                 reg = [reg,euc_dist(k,i)];
-%             end
-%             %min_centr(k) = min(reg);
-%         end
-%         %[M,I] = min(min_centr);
-%         %bean_counter(I) = bean_counter(I+1);
-%         %speaker{1,k} = I;
-%     end
-% end
+%% find out the length of the code book
+size_ = (cellfun('size',code_cell,1));
+len_code_cell =[];
+for i=1:num_data
+    col = nnz(size_(i,:));
+    len_code_cell = [len_code_cell,col];
+end
+len_code_cell = len_code_cell(1);
 %% get the euc distance and match speakers
 euc_dist = [];
 reg =[];
@@ -119,13 +107,13 @@ for i=1:num_data%number of known speakers
     guest_avg =[];
     for F=1:11%number of guest speakers
         centr_avg =[];
-        for L=1:8%number of centroids
+        for L=1:len_code_cell%number of centroids
             reg =[];
             for j=1:(length_row(F))%number of data points per guest speaker
                 euc_dist = disteu(code_cell{i,L}, guest_speaker{F,j});
                 reg = [reg,euc_dist];
             end
-            prev_avg = mean(reg);
+            prev_avg = min(reg); %USED TO BE MEAN NOW ITS MIN
             centr_avg = [centr_avg,prev_avg];
         end
         prev_avg = mean(centr_avg);
@@ -135,7 +123,7 @@ for i=1:num_data%number of known speakers
     index = I;
     index_guess = [index_guess,index];
 end
-
+disp(index_guess)
     
 
 
