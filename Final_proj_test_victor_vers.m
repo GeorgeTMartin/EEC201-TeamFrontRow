@@ -1,6 +1,7 @@
 %% Grab data
-num_test = 8;
-num_train = 11;
+clc;clear;close;
+num_test = 10;%was 8
+num_train = 13;%was 11
 test_set = cell(num_test,2);
 for i = 1:num_test
     filename = ['s',num2str(i)];
@@ -10,16 +11,19 @@ for i = 1:num_test
     test_set{i,1} = (test_set{i,1}-mean(test_set{i,1}))./max(abs(test_set{i,1})); %Normalization to 1
 end
 %% Remove stero
-% for i=9:num_data
-%     test_set{i,1}(:,2) = [];
-% end
+for i=1:(num_test) 
+    [n,m] = size(test_set{i,1});
+    if m == 2
+         test_set{i,1}(:,2) = [];
+    end
+end
 
 %% 
-codebook = readmatrix("Codebook_final.txt");
+codebook = readmatrix("Codebook.txt");
 
 %% %% Generate Ceptsrum Coefficients 
-N=256; %Length of Frame Block
-M=100; %Shift Between Each  Frame Block
+N=512; %Length of Frame Block%used to be 256
+M=256; %Shift Between Each  Frame Block%used to be 100
 Window=.54-.46*cos(2*pi().*[1:N]/(N-1));
 for i = 1:num_test
     n1 = 1:N-M:length(test_set{i,1})-N;
