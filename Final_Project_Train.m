@@ -120,26 +120,26 @@ while size(codebook,2) < 8                                                      
 end
 
 writecell(codebook,'Codebook')
-%% 
 
-%  for i = 1:size(codebook,2) %CODEBOOK CENTROIDS TRAINSET 1
-%      d1(i) = codebook{10,i}(1);
-%      d2(i) = codebook{10,i}(2);
-%      d3(i) = codebook{5,i}(1);
-%      d4(i) = codebook{5,i}(2);
-%  end
-%  for i = 1:size(train_set_CEP,2)
-%        if(isempty(train_set_CEP{1,i}))
-%                     continue
-%        else
-%             s1(i) = train_set_CEP{10,i}(1);
-%             s2(i) = train_set_CEP{10,i}(2);
-%             s3(i) = train_set_CEP{5,i}(1);
-%             s4(i) = train_set_CEP{5,i}(2);
-%        end
-%  end
-%  scatter(d1,d2,'b')
-%  hold on
-%  scatter(s1,s2,'g')
-%  scatter(d3,d4,'black','*')
-%  scatter(s3,s4,'r','*')
+
+  for i = 1:size(codebook,2) %CODEBOOK CENTROIDS TRAINSET 1
+      d1(i) = codebook{10,i}(1);
+      d2(i) = codebook{10,i}(2);
+      d3(i) = codebook{5,i}(1);
+      d4(i) = codebook{5,i}(2);
+  end
+  for i = 1:size(train_set_CEP,2)
+        if(isempty(train_set_CEP{1,i}))
+                     continue
+        else
+             s1(i) = train_set_CEP{10,i}(1);
+             s2(i) = train_set_CEP{10,i}(2);
+             s3(i) = train_set_CEP{5,i}(1);
+             s4(i) = train_set_CEP{5,i}(2);
+        end
+  end
+  scatter(d1,d2,'b')
+  hold on
+  scatter(s1,s2,'g')
+  scatter(d3,d4,'black','*')
+  scatter(s3,s4,'r','*')
