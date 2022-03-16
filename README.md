@@ -17,3 +17,6 @@ TO RUN:
 3. Open Final_Project_Train in MATLAB and run
 4. Make sure Codebook text file was saved in project folder
 5. Open Final_Project_Test in MATLAB and run
+
+Video Presentation:
+https://drive.google.com/file/d/1DDrjyCbyad-MtQfWyi950ggQ3BUnxXZ8/view?usp=sharing
